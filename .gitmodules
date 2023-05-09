@@ -1,0 +1,6 @@
+[submodule "catchnhole"]
+	path = catchnhole
+	url = https://github.com/mmalecki/catchnhole
+[submodule "v-slot"]
+	path = v-slot
+	url = https://github.com/mmalecki/openscad-v-slot
