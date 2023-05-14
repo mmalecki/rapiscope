@@ -1,0 +1,3 @@
+# Ignore common OpenSCAD output file formats
+*.3mf
+*.stl
