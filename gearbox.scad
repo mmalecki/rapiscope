@@ -12,7 +12,7 @@ $fn = 200;
 w = 6;
 
 // Gear module:
-m = 1;
+m = 1.5;
 
 /* [ Worm ] */
 thread_starts = 2;
@@ -24,9 +24,9 @@ lead_angle = 10;
 // going to drive parts of the worm design off the shaft length.
 
 // Bolt size to use as shaft:
-worm_shaft = "M5";
+worm_shaft = "M8";
 // Shaft length:
-worm_shaft_l = 35;
+worm_shaft_l = 50;
 worm_bearing_h = 7;
 worm_bearing_id = 8;
 worm_bearing_od = 22;
@@ -34,8 +34,10 @@ worm_bearing_holder_d = worm_bearing_od + bearing_wall_min_d;
 worm_shaft_nut_h = nut_height(worm_shaft, kind = "hexagon_lock");
 worm_shaft_nut_wall_d = nut_width_across_corners(worm_shaft) + nut_wall_min_d;
 
-worm_add_l = worm_shaft_nut_h + nut_wall_min_h;
-worm_length = worm_shaft_l - worm_bearing_h - worm_add_l;
+// Length of the mount at the bottom of the shaft:
+worm_shaft_mount_h = worm_shaft_nut_h + nut_wall_min_h;
+// Length of the worm gear itself:
+worm_length = worm_shaft_l - 2 * worm_bearing_h - worm_shaft_mount_h;
 
 worm_r = m * thread_starts / (2 * sin(lead_angle));  // From gears/gears.scad.
 
@@ -71,11 +73,13 @@ slider_h = slider_bolt_s + nut_wall_d;
 /* [ Housing ] */
 housing_t = bolt_wall_d;
 housing_y_offset = slider_d / 2 + nut_wall_d / 2 - housing_t / 2;
-housing_l = slider_h;
+housing_h = worm_shaft_l;
 housing_d = worm_bearing_holder_d / 2 + pinion_d - slider_t + worm_r;
-housing_z_offset = -worm_length / 2 - worm_add_l + (worm_shaft_l - housing_l);
+housing_z_offset = -worm_shaft_mount_h / 2;
+// housing_z_offset = 0;
 
 /* [ Print ] */
+print = false;
 bolt_hole_sacrificial_layer = 0.2;
 
 /* [ Assembly ] */
@@ -92,36 +96,51 @@ rack = true;
 // Show the slider:
 slider = true;
 
+// Show ranges of motion:
+rom = true;
+
+// Housing opacity:
+housing_alpha = 1;  //[0:0.1:1]
+
 echo("Slider bolt X spacing:", slider_bolt_x_s);
 
 module gearbox_housing () {
+  gearbox_housing_half();
+  mirror([ 1, 0, 0 ]) gearbox_housing_half();
+}
+module gearbox_housing_half () {
+  bearing_z = [ worm_length / 2, -worm_length / 2 - worm_shaft_mount_h - worm_bearing_h ];
   difference() {
     union() {
       translate([ -housing_y_offset - housing_t, -housing_d - slider_t, housing_z_offset ])
-        cube([ housing_t, housing_d, housing_l ]);
+        cube([ housing_t, housing_d, housing_h ]);
 
-      gearbox_to_worm() {
-        translate([ 0, 0, worm_length ]) {
-          cylinder(d = worm_bearing_holder_d, h = worm_bearing_h);
-          rotate([ 0, 0, 180 ]) translate([ 0, -worm_bearing_holder_d / 2 ])
-            cube([ housing_y_offset, worm_bearing_holder_d, worm_bearing_h ]);
+      gearbox_to_drive_train() {
+        gearbox_to_worm() {
+          // We're in the middle of the worm gear right now.
+          for (z = bearing_z) {
+            translate([ 0, 0, z ]) {
+              rotate([ 0, 0, 180 ]) translate([ 0, -worm_bearing_holder_d / 2 ])
+                cube([ housing_y_offset, worm_bearing_holder_d, worm_bearing_h ]);
+            }
+          }
         }
-      }
 
-      gearbox_to_pinion() {
-        translate([ 0, 0, housing_y_offset ]) {
-          rotate([ 180, 0, 0 ]) {
-            pinion_spacer_d = bolt_diameter(pinion_shaft) + bolt_wall_min_d;
-            cylinder(
-              d2 = pinion_spacer_d, d1 = pinion_spacer_d + 0.4,
-              h = housing_y_offset - w / 2 - tight_fit
-            );
+        gearbox_to_pinion() {
+          translate([ 0, 0, housing_y_offset ]) {
+            rotate([ 180, 0, 0 ]) {
+              pinion_spacer_d = bolt_diameter(pinion_shaft) + bolt_wall_min_d;
+              cylinder(
+                d2 = pinion_spacer_d, d1 = pinion_spacer_d + 0.4,
+                h = housing_y_offset - w / 2 - tight_fit
+              );
+            }
           }
         }
       }
     }
 
-    translate([ -housing_y_offset - housing_t / 2, 0, bolt_wall_d / 4 ]) {
+    translate([ -housing_y_offset - housing_t / 2, 0, housing_h / 2 ]) {
       for (side = [ 1, -1 ]) {
         translate([ 0, 0, side * slider_bolt_s / 2 ]) {
           rotate([ 90, 0, 0 ])
@@ -130,19 +149,23 @@ module gearbox_housing () {
       }
     }
 
-    gearbox_to_worm() {
-      translate([ 0, 0, worm_length ]) {
-        cylinder(d = worm_bearing_od, h = worm_bearing_h);
+    gearbox_to_drive_train() {
+      gearbox_to_worm() {
+        for (z = bearing_z) {
+          translate([ 0, 0, z ]) {
+            cylinder(d = worm_bearing_od, h = worm_bearing_h);
+          }
+        }
       }
-    }
-    gearbox_to_pinion() {
-      translate([ 0, 0, housing_y_offset + housing_t ]) {
-        rotate([ 180, 0, 0 ]) {
-          nutcatch_parallel(pinion_shaft);
-          difference() {
-            bolt(pinion_shaft, length = v_slot_d, kind = "socket_head");
-            translate([ 0, 0, nut_height(pinion_shaft) ])
-              bolt(pinion_shaft, length = bolt_hole_sacrificial_layer);
+      gearbox_to_pinion() {
+        translate([ 0, 0, housing_y_offset + housing_t ]) {
+          rotate([ 180, 0, 0 ]) {
+            nutcatch_parallel(pinion_shaft);
+            difference() {
+              bolt(pinion_shaft, length = v_slot_d, kind = "socket_head");
+              translate([ 0, 0, nut_height(pinion_shaft) ])
+                bolt(pinion_shaft, length = bolt_hole_sacrificial_layer);
+            }
           }
         }
       }
@@ -150,19 +173,30 @@ module gearbox_housing () {
   }
 }
 module gearbox_to_worm () {
-  translate([ 0, -worm_r - pinion_d, -worm_length / 2 ]) children();
+  translate([ 0, -worm_r - pinion_d, 0 ]) children();
 }
 
 module gearbox_to_pinion () {
   translate([ 0, -pinion_d / 2 ]) rotate([ 90, 0, -90 ]) children();
 }
 
+module gearbox_pinion_assembly (rom = false) {
+  if (rom) {
+    translate([ 0, 0, -w / 2 ]) {
+      color("red", 0.25) cylinder(d = m * pinion_teeth + 2 * m, h = w);
+    }
+  }
+  gearbox_pinion();
+}
+
 module gearbox_pinion () {
   difference() {
-    translate([ 0, 0, -w / 2 ]) spur_gear(
-      m, pinion_teeth, w, bore = bolt_diameter(pinion_shaft) + fit, optimized = false,
-      helix_angle = -lead_angle
-    );
+    translate([ 0, 0, -w / 2 ]) {
+      spur_gear(
+        m, pinion_teeth, w, bore = bolt_diameter(pinion_shaft) + fit, optimized = false,
+        helix_angle = -lead_angle
+      );
+    }
     translate([ 0, 0, -pinion_bearing_t + w / 2 ])
       cylinder(d = pinion_bearing_d, h = pinion_bearing_t);
   }
@@ -170,19 +204,22 @@ module gearbox_pinion () {
 
 module gearbox_worm () {
   l_fit = worm_length - fit;
-  difference() {
-    union() {
-      translate([ 0, 0, l_fit ]) cylinder(d = worm_bearing_id, h = worm_bearing_h + fit);
-      worm(m, thread_starts, l_fit, bolt_diameter(worm_shaft), lead_angle = lead_angle);
-      translate([ 0, 0, -worm_add_l + fit ])
-        cylinder(d = worm_shaft_nut_wall_d, h = worm_add_l);
-    }
+  mount_h = worm_shaft_mount_h;
 
-    translate([ 0, 0, -worm_add_l + fit ]) {
+  // Center around the drive train point:
+  translate([ 0, 0, -l_fit / 2 - mount_h ]) {
+    difference() {
+      union() {
+        cylinder(d = worm_shaft_nut_wall_d, h = mount_h);
+        translate([ 0, 0, mount_h ])
+          worm(m, thread_starts, l_fit, bolt_diameter(worm_shaft), lead_angle = lead_angle);
+      }
+
       nutcatch_parallel(worm_shaft, kind = "hexagon_lock");
 
       difference() {
-        bolt(worm_shaft, length = worm_shaft_l, kind = "socket_head");
+        translate([ 0, 0, -worm_bearing_h ])
+          bolt(worm_shaft, length = worm_shaft_l, kind = "socket_head");
         if (bolt_hole_sacrificial_layer != 0) {
           translate([ 0, 0, worm_shaft_nut_h ])
             cylinder(d = bolt_diameter(worm_shaft), h = bolt_hole_sacrificial_layer);
@@ -191,6 +228,8 @@ module gearbox_worm () {
     }
   }
 }
+
+module worm_assembly () {}
 
 module slider () {
   d = slider_d;
@@ -248,25 +287,49 @@ module gearbox_rack_mount () {
 
 module gearbox_rack () {
   translate([ w / 2, 0 ]) {
-    translate([ 0, 0, -rack_l / 2 - rack_mount_h + 2 * m ]) gearbox_rack_mount();
+    translate([ 0, 0, -rack_mount_h + 2 * m ]) gearbox_rack_mount();
 
-    rotate([ 90, 90, -90 ]) rack(
+    translate([ 0, 0, rack_l / 2 ]) rotate([ 90, 90, -90 ]) rack(
       m, length = rack_l, height = v_slot_slot_h, width = w, pressure_angle = 20,
       helix_angle = lead_angle
     );
-    translate([ 0, 0, rack_l / 2 ]) gearbox_rack_mount();
+    translate([ 0, 0, rack_l ]) gearbox_rack_mount();
   }
 }
 
-module assembly (rail = true, pinion = true, housing = true) {
-  if (housing)
-    gearbox_housing();
+module gearbox_to_drive_train () {
+  translate([ 0, 0, housing_h / 2 ]) children();
+}
 
-  if (worm)
-    gearbox_to_worm() gearbox_worm();
+module gearbox_assembly (
+  housing = true,
+  pinion = true,
+  worm = true,
+  rom = false,
+  housing_alpha = 1
+) {
+  if (housing) {
+    color(undef, housing_alpha) gearbox_housing();
+  }
 
-  if (pinion)
-    gearbox_to_pinion() gearbox_pinion();
+  gearbox_to_drive_train() {
+    if (worm)
+      gearbox_to_worm() gearbox_worm();
+
+    if (pinion)
+      gearbox_to_pinion() gearbox_pinion_assembly(rom = rom);
+  }
+}
+
+module drive_train_assembly (
+  rail = true,
+  housing = true,
+  pinion = true,
+  worm = true,
+  rom = false,
+  housing_alpha = 1,
+) {
+  gearbox_assembly(housing, pinion, worm, rom, housing_alpha);
 
   if (rack) {
     gearbox_rack();
@@ -274,12 +337,12 @@ module assembly (rail = true, pinion = true, housing = true) {
 
   translate([ 0, v_slot_d / 2 ]) {
     if (rail) {
-      translate([ 0, 0, -rack_l / 2 ]) color("silver") v_slot(rack_l);
+      color("silver") v_slot(rack_l);
     }
     if (slider) {
-      translate([ 0, 0, housing_z_offset ]) slider();
+      gearbox_to_drive_train() translate([ 0, 0, -slider_h / 2 ]) slider();
     }
   }
 }
 
-assembly(rail, pinion, housing);
+drive_train_assembly(rail, housing, pinion, worm, rom, housing_alpha);
