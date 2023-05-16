@@ -76,7 +76,6 @@ housing_y_offset = slider_d / 2 + nut_wall_d / 2 - housing_t / 2;
 housing_h = worm_shaft_l;
 housing_d = worm_bearing_holder_d / 2 + pinion_d - slider_t + worm_r;
 housing_z_offset = -worm_shaft_mount_h / 2;
-// housing_z_offset = 0;
 
 /* [ Print ] */
 print = false;
@@ -108,6 +107,14 @@ module gearbox_housing () {
   gearbox_housing_half();
   mirror([ 1, 0, 0 ]) gearbox_housing_half();
 }
+module gearbox_rib (a_x, a_y, b_x0, b_x1, b_y, h) {
+  b_x2 = b_x0 + b_x1 + a_x;
+
+  translate([ 0, 0, -h / 2 ]) linear_extrude(h) {
+    polygon([ [ 0, 0 ], [ a_x, a_y ], [ b_x0 + a_x, b_y ], [ b_x2, b_y ], [ b_x2, 0 ] ]);
+  }
+}
+
 module gearbox_housing_half () {
   bearing_z = [ worm_length / 2, -worm_length / 2 - worm_shaft_mount_h - worm_bearing_h ];
   difference() {
@@ -126,17 +133,20 @@ module gearbox_housing_half () {
           }
         }
 
-        gearbox_to_pinion() {
-          translate([ 0, 0, housing_y_offset ]) {
-            rotate([ 180, 0, 0 ]) {
-              pinion_spacer_d = bolt_diameter(pinion_shaft) + bolt_wall_min_d;
-              cylinder(
-                d2 = pinion_spacer_d, d1 = pinion_spacer_d + 0.4,
-                h = housing_y_offset - w / 2 - tight_fit
-              );
-            }
-          }
-        }
+        pinion_spacer_h = housing_y_offset - w / 2 - tight_fit;
+        pinion_spacer_d = bolt_diameter(pinion_shaft) + bolt_wall_min_d;
+        rib_w = housing_d;
+        translate([ -housing_y_offset, -slider_t - rib_w ]) mirror([ 0, 1 ])
+          rotate([ 0, 0, 270 ]) gearbox_rib(
+            housing_d / 2,
+            housing_y_offset - worm_r -
+              m,  // Length and height of first section (trying to avoid the worm gear)
+            housing_d / 2 - pinion_d / 2 + slider_t - pinion_spacer_d / 2,
+            pinion_spacer_d,  // Length and height of the final section (building up to
+                              // the pinion gear spacer)
+            pinion_spacer_h,  // Height of the final section
+            pinion_spacer_d   // Width of the rib itself
+          );
       }
     }
 
@@ -161,11 +171,7 @@ module gearbox_housing_half () {
         translate([ 0, 0, housing_y_offset + housing_t ]) {
           rotate([ 180, 0, 0 ]) {
             nutcatch_parallel(pinion_shaft);
-            difference() {
-              bolt(pinion_shaft, length = v_slot_d, kind = "socket_head");
-              translate([ 0, 0, nut_height(pinion_shaft) ])
-                bolt(pinion_shaft, length = bolt_hole_sacrificial_layer);
-            }
+            bolt(pinion_shaft, length = v_slot_d, kind = "socket_head");
           }
         }
       }
@@ -210,7 +216,7 @@ module gearbox_worm () {
   translate([ 0, 0, -l_fit / 2 - mount_h ]) {
     difference() {
       union() {
-        cylinder(d = worm_shaft_nut_wall_d, h = mount_h);
+        cylinder(d = max(worm_shaft_nut_wall_d, 2 * (worm_r + m)) - m / 3, h = mount_h);
         translate([ 0, 0, mount_h ])
           worm(m, thread_starts, l_fit, bolt_diameter(worm_shaft), lead_angle = lead_angle);
       }
@@ -345,4 +351,6 @@ module drive_train_assembly (
   }
 }
 
+pinion_spacer_h = housing_y_offset - w / 2 - tight_fit;
+pinion_spacer_d = bolt_diameter(pinion_shaft) + bolt_wall_min_d;
 drive_train_assembly(rail, housing, pinion, worm, rom, housing_alpha);
