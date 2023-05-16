@@ -351,6 +351,4 @@ module drive_train_assembly (
   }
 }
 
-pinion_spacer_h = housing_y_offset - w / 2 - tight_fit;
-pinion_spacer_d = bolt_diameter(pinion_shaft) + bolt_wall_min_d;
 drive_train_assembly(rail, housing, pinion, worm, rom, housing_alpha);
