@@ -299,7 +299,7 @@ module gearbox_rack () {
       m, length = rack_l, height = v_slot_slot_h, width = w, pressure_angle = 20,
       helix_angle = lead_angle
     );
-    translate([ 0, 0, rack_l ]) gearbox_rack_mount();
+    translate([ 0, 0, rack_l - m ]) gearbox_rack_mount();
   }
 }
 
