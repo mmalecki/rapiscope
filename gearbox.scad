@@ -292,14 +292,15 @@ module gearbox_rack_mount () {
 }
 
 module gearbox_rack () {
+  mx = m / cos(lead_angle);  // copied from gears/gears.scad
   translate([ w / 2, 0 ]) {
-    translate([ 0, 0, -rack_mount_h + 2 * m ]) gearbox_rack_mount();
+    translate([ 0, 0, -rack_mount_h + mx ]) gearbox_rack_mount();
 
     translate([ 0, 0, rack_l / 2 ]) rotate([ 90, 90, -90 ]) rack(
       m, length = rack_l, height = v_slot_slot_h, width = w, pressure_angle = 20,
       helix_angle = lead_angle
     );
-    translate([ 0, 0, rack_l - m ]) gearbox_rack_mount();
+    translate([ 0, 0, rack_l - mx ]) gearbox_rack_mount();
   }
 }
 
