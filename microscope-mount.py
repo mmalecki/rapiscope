@@ -125,6 +125,6 @@ assembly = (
 
 assembly.solve()
 
-# show_object(mount(), name = "mount")
-# show_object(holder(), name = "holder")
+show_object(mount().translate((mount_w + 10, 0)), name = "mount")
+show_object(holder().translate((mount_w + 10, -150)), name = "holder")
 show_object(assembly, name="microscope_mount")
