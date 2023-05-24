@@ -122,7 +122,7 @@ assembly = (
     .add(mount(), name="mount")
     .add(holder(), name="holder")
     .constrain("mount?holder_mount", "holder@faces@>Y", "Plane")
-    .constrain("mount@faces@|Z", "holder@faces@|Z", "Axis")
+    .constrain("mount@faces@>Z[1]", "holder@faces@<Z", "Axis")
 )
 
 assembly.solve()
