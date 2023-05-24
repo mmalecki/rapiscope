@@ -114,8 +114,7 @@ def holder():
         .slot2D(holder_od * math.pi * (60 / 360), holder_bolt, 90).cutBlind(until = "next")
     )
 
-    # return result
-    return result.edges(">Z").chamfer(c)
+    return result.edges(">Z").chamfer(c).edges("<Z").chamfer(c)
 
 
 assembly = (
