@@ -105,13 +105,13 @@ def holder():
 
     result.faces(">Y").tag("mount")
 
-    # This mounting slot covers 60 degrees. A mounting point for the lens happens
-    # every 90 degrees, so we're essentially hoping for the best here.
+    # This mounting slot covers ~60 degrees at most. A mounting point for the lens
+    # happens every 90 degrees, so we're essentially hoping for the best here.
     result = (
         result.workplaneFromTagged("holder")
         .center(0, -holder_od / 2)
         .transformed((90, 0, 90), offset=(0, 0, holder_h - holder_bolt_offset))
-        .slot2D(holder_od * math.pi * (60 / 360), holder_bolt, 90).cutBlind(until = "next")
+        .slot2D(holder_od / 2, holder_bolt, 90).cutBlind(until = "next")
     )
 
     return result.edges(">Z").chamfer(c).edges("<Z").chamfer(c)
