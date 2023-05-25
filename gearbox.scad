@@ -80,6 +80,7 @@ housing_z_offset = -worm_shaft_mount_h / 2;
 /* [ Print ] */
 print = false;
 bolt_hole_sacrificial_layer = 0.2;
+part = undef;  // ["housing", "worm", "pinion", "rack", "slider"]
 
 /* [ Assembly ] */
 // Show the housing:
@@ -330,6 +331,7 @@ module gearbox_assembly (
 
 module drive_train_assembly (
   rail = true,
+  rack = true,
   housing = true,
   pinion = true,
   worm = true,
@@ -352,4 +354,22 @@ module drive_train_assembly (
   }
 }
 
-drive_train_assembly(rail, housing, pinion, worm, rom, housing_alpha);
+module print () {
+  assert(!is_undef(part), "part needs to be set");
+  if (part == "housing")
+    gearbox_housing();
+  else if (part == "pinion")
+    gearbox_pinion();
+  else if (part == "worm")
+    gearbox_worm();
+  else if (part == "rack")
+    gearbox_rack();
+  else if (part == "slider")
+    slider();
+}
+
+if (!print) {
+  drive_train_assembly(rail, rack, housing, pinion, worm, rom, housing_alpha);
+} else {
+  print();
+}
