@@ -27,9 +27,14 @@ lead_angle = 10;
 worm_shaft = "M8";
 // Shaft length:
 worm_shaft_l = 50;
+
+// Height of the worm bearing:
 worm_bearing_h = 7;
+// Internal diameter of the worm bearing:
 worm_bearing_id = 8;
+// Outer diameter of the worm bearing:
 worm_bearing_od = 22;
+
 worm_bearing_holder_d = worm_bearing_od + bearing_wall_min_d;
 worm_shaft_nut_h = nut_height(worm_shaft, kind = "hexagon_lock");
 worm_shaft_nut_wall_d = nut_width_across_corners(worm_shaft) + nut_wall_min_d;
@@ -45,28 +50,33 @@ worm_r = m * thread_starts / (2 * sin(lead_angle));  // From gears/gears.scad.
 // Bolt size to use as shaft:
 pinion_shaft = "M3";
 
+// How many teeth the pinion gear should have:
 pinion_teeth = 16;
-pinion_bearing_d = 10;
-pinion_bearing_t = 4;
-pinion_h = pinion_bearing_t;
+//
+pinion_bearing_od = 10;
+pinion_bearing_h = 4;
 pinion_d = m * pinion_teeth;
 
 /* [ Rack ] */
-// Length of the rack:
-rack_l = 50;
+// Length of the rack (120 mm for 400 mm long v-slot, 220 mm for 500 mm):
+rack_l = 120;
 rack_mount_bolt_l = 8;
 rack_mount_d = rack_mount_bolt_l;
-rack_mount_t_nut_clearance = 11.5;
-rack_mount_t_nut_cam_h = 1;
-rack_mount_h = rack_mount_t_nut_clearance + nut_wall_min_d;
 
+// Rack mount bolt.
 rack_mount_bolt = "M4";
+// Measured cam height of the M4 t-nut.
+rack_mount_t_nut_cam_h = 1;
+// Measured clearance the M4 t-nut needs to rotate in the v-slot slot.
+rack_mount_t_nut_clearance = 11.5;
+rack_mount_h = rack_mount_t_nut_clearance + nut_wall_min_d;
 
 /* [ Slider ] */
 // Thickness of the slider wall:
 slider_t = v_slot_wall_min_t;
 slider_d = v_slot_d + 2 * v_slot_wall_min_t;
-slider_bolt_s = 20;  // Spacing of the slider mounting bolts.
+// Spacing of the slider mounting bolts in Z axis (X is determined by design rules):
+slider_bolt_s = 20;
 slider_bolt_x_s = slider_d + nut_wall_d;
 slider_h = slider_bolt_s + nut_wall_d;
 
@@ -204,8 +214,8 @@ module gearbox_pinion () {
         helix_angle = -lead_angle
       );
     }
-    translate([ 0, 0, -pinion_bearing_t + w / 2 ])
-      cylinder(d = pinion_bearing_d, h = pinion_bearing_t);
+    translate([ 0, 0, -pinion_bearing_h + w / 2 ])
+      cylinder(d = pinion_bearing_od, h = pinion_bearing_h);
   }
 }
 
