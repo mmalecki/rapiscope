@@ -291,7 +291,7 @@ module gearbox_rack_mount () {
   translate([ -w, -(rack_mount_d - v_slot_slot_h) ]) {
     difference() {
       cube([ w, rack_mount_d, rack_mount_h ]);
-      translate([ w / 2, rack_mount_d, rack_mount_h / 2 ]) rotate([ 90, 90, 0 ]) {
+      translate([ w / 2, rack_mount_d, rack_mount_h * 3 / 4 ]) rotate([ 90, 90, 0 ]) {
         bolt(rack_mount_bolt, rack_mount_bolt_l, kind = "socket_head");
         cylinder(
           h = v_slot_slot_h - (v_slot_slot_cam_h - rack_mount_t_nut_cam_h - tight_fit),
@@ -305,7 +305,7 @@ module gearbox_rack_mount () {
 module gearbox_rack () {
   mx = m / cos(lead_angle);  // copied from gears/gears.scad
   translate([ w / 2, 0 ]) {
-    translate([ 0, 0, -rack_mount_h + mx ]) gearbox_rack_mount();
+    translate([ 0, 0, mx ]) mirror([ 0, 0, 1 ]) gearbox_rack_mount();
 
     translate([ 0, 0, rack_l / 2 ]) rotate([ 90, 90, -90 ]) rack(
       m, length = rack_l, height = v_slot_slot_h, width = w, pressure_angle = 20,
