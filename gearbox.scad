@@ -82,7 +82,7 @@ slider_h = slider_bolt_s + nut_wall_d;
 
 /* [ Housing ] */
 housing_t = bolt_wall_d;
-housing_y_offset = slider_d / 2 + nut_wall_d / 2 - housing_t / 2;
+housing_w = slider_d / 2 + nut_wall_d / 2 - housing_t / 2;
 housing_h = worm_shaft_l;
 housing_d = worm_bearing_holder_d / 2 + pinion_d - slider_t + worm_r;
 housing_z_offset = -worm_shaft_mount_h / 2;
@@ -113,6 +113,7 @@ rom = true;
 housing_alpha = 1;  //[0:0.1:1]
 
 echo("Slider bolt X spacing:", slider_bolt_x_s);
+echo("Housing length:", housing_d);
 
 module gearbox_housing () {
   gearbox_housing_half();
@@ -130,7 +131,7 @@ module gearbox_housing_half () {
   bearing_z = [ worm_length / 2, -worm_length / 2 - worm_shaft_mount_h - worm_bearing_h ];
   difference() {
     union() {
-      translate([ -housing_y_offset - housing_t, -housing_d - slider_t, housing_z_offset ])
+      translate([ -housing_w - housing_t, -housing_d - slider_t, housing_z_offset ])
         cube([ housing_t, housing_d, housing_h ]);
 
       gearbox_to_drive_train() {
@@ -139,18 +140,18 @@ module gearbox_housing_half () {
           for (z = bearing_z) {
             translate([ 0, 0, z ]) {
               rotate([ 0, 0, 180 ]) translate([ 0, -worm_bearing_holder_d / 2 ])
-                cube([ housing_y_offset, worm_bearing_holder_d, worm_bearing_h ]);
+                cube([ housing_w, worm_bearing_holder_d, worm_bearing_h ]);
             }
           }
         }
 
-        pinion_spacer_h = housing_y_offset - w / 2 - tight_fit;
+        pinion_spacer_h = housing_w - w / 2 - tight_fit;
         pinion_spacer_d = bolt_diameter(pinion_shaft) + bolt_wall_min_d;
         rib_w = housing_d;
-        translate([ -housing_y_offset, -slider_t - rib_w ]) mirror([ 0, 1 ])
-          rotate([ 0, 0, 270 ]) gearbox_rib(
+        translate([ -housing_w, -slider_t - rib_w ]) mirror([ 0, 1 ]) rotate([ 0, 0, 270 ])
+          gearbox_rib(
             housing_d / 2,
-            housing_y_offset - worm_r -
+            housing_w - worm_r -
               m,  // Length and height of first section (trying to avoid the worm gear)
             housing_d / 2 - pinion_d / 2 + slider_t - pinion_spacer_d / 2,
             pinion_spacer_d,  // Length and height of the final section (building up to
@@ -161,7 +162,7 @@ module gearbox_housing_half () {
       }
     }
 
-    translate([ -housing_y_offset - housing_t / 2, 0, housing_h / 2 ]) {
+    translate([ -housing_w - housing_t / 2, 0, housing_h / 2 ]) {
       for (side = [ 1, -1 ]) {
         translate([ 0, 0, side * slider_bolt_s / 2 ]) {
           rotate([ 90, 0, 0 ])
@@ -179,7 +180,7 @@ module gearbox_housing_half () {
         }
       }
       gearbox_to_pinion() {
-        translate([ 0, 0, housing_y_offset + housing_t ]) {
+        translate([ 0, 0, housing_w + housing_t ]) {
           rotate([ 180, 0, 0 ]) {
             nutcatch_parallel(pinion_shaft);
             bolt(pinion_shaft, length = v_slot_d, kind = "socket_head");
