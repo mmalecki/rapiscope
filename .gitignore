@@ -1,6 +1,7 @@
-# Ignore common OpenSCAD output file formats
+# Ignore common CAD output file formats
 *.3mf
 *.stl
+*.step
 
 # And some resin printing-related file formats.
 *.ctb
