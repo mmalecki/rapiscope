@@ -7,3 +7,6 @@
 [submodule "gears"]
 	path = gears
 	url = https://github.com/chrisspen/gears.git
+[submodule "nopscadlib"]
+	path = nopscadlib
+	url = https://github.com/nophead/NopSCADlib.git
