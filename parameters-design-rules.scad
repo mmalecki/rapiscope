@@ -2,7 +2,8 @@ use <catchnhole/catchnhole.scad>;
 
 bolt = "M3";
 
-tight_fit = 0.2;
+press_fit = 0;
+tight_fit = 0.1;
 fit = 0.2;
 v_slot_sliding_fit = 0.021;  // H7/h6 over a 20 mm "shaft"
 loose_fit = 0.5;
