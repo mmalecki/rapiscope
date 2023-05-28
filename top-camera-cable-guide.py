@@ -63,7 +63,7 @@ def guide():
 
     # For optional zip ties.
     vslotMount = (vslotMount.faces(">X").workplane(centerOption="CenterOfBoundBox")
-                  .pushPoints([(e_o + e_d / 2, 0), (e_o + e_d * 3/4, 0)])
+                  .pushPoints([(e_o + e_d / 2, 0), (e_o + e_d * 3/4, 0), (-l / 2 + w / 2, 0)])
                   .slot2D(3, 1.5, 0).cutThruAll()
     )
 
