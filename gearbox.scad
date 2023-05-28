@@ -92,33 +92,16 @@ print = false;
 bolt_hole_sacrificial_layer = 0.2;
 part = undef;  // ["housing", "worm", "pinion", "rack", "slider"]
 
-/* [ Assembly ] */
-// Show the housing:
-housing = true;
-// Show the worm gear:
-worm = true;
-// Show the pinion gear:
-pinion = true;
-// Show the rail:
-rail = true;
-// Show the rack:
-rack = true;
-// Show the slider:
-slider = true;
-
-// Show ranges of motion:
-rom = true;
-
-// Housing opacity:
-housing_alpha = 1;  //[0:0.1:1]
-
 echo("Slider bolt X spacing:", slider_bolt_x_s);
 echo("Housing length:", housing_d);
+
+function slider_h () = slider_h;
 
 module gearbox_housing () {
   gearbox_housing_half();
   mirror([ 1, 0, 0 ]) gearbox_housing_half();
 }
+
 module gearbox_rib (a_x, a_y, b_x0, b_x1, b_y, h) {
   b_x2 = b_x0 + b_x1 + a_x;
 
@@ -320,51 +303,6 @@ module gearbox_to_drive_train () {
   translate([ 0, 0, housing_h / 2 ]) children();
 }
 
-module gearbox_assembly (
-  housing = true,
-  pinion = true,
-  worm = true,
-  rom = false,
-  housing_alpha = 1
-) {
-  if (housing) {
-    color(undef, housing_alpha) gearbox_housing();
-  }
-
-  gearbox_to_drive_train() {
-    if (worm)
-      gearbox_to_worm() gearbox_worm();
-
-    if (pinion)
-      gearbox_to_pinion() gearbox_pinion_assembly(rom = rom);
-  }
-}
-
-module drive_train_assembly (
-  rail = true,
-  rack = true,
-  housing = true,
-  pinion = true,
-  worm = true,
-  rom = false,
-  housing_alpha = 1,
-) {
-  gearbox_assembly(housing, pinion, worm, rom, housing_alpha);
-
-  if (rack) {
-    gearbox_rack();
-  }
-
-  translate([ 0, v_slot_d / 2 ]) {
-    if (rail) {
-      color("silver") v_slot(rack_l);
-    }
-    if (slider) {
-      gearbox_to_drive_train() translate([ 0, 0, -slider_h / 2 ]) slider();
-    }
-  }
-}
-
 module print () {
   assert(!is_undef(part), "part needs to be set");
   if (part == "housing")
@@ -379,8 +317,4 @@ module print () {
     slider();
 }
 
-if (!print) {
-  drive_train_assembly(rail, rack, housing, pinion, worm, rom, housing_alpha);
-} else {
-  print();
-}
+print();
