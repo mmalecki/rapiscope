@@ -1,5 +1,4 @@
 import cadquery as cq
-import math
 
 fit = 0.1
 
