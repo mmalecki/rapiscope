@@ -10,3 +10,6 @@
 [submodule "nopscadlib"]
 	path = nopscadlib
 	url = https://github.com/nophead/NopSCADlib.git
+[submodule "knobs"]
+	path = knobs
+	url = https://github.com/mmalecki/openscad-knobs
