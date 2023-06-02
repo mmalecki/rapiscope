@@ -6,6 +6,9 @@ use <gears/gears.scad>;
 use <v-slot.scad>;
 use <v-slot/v-slot.scad>;
 
+// Error correction for OpenSCAD flickering.
+ec = 0.01;
+
 $fn = 200;
 
 // Width of the gears:
@@ -46,6 +49,8 @@ worm_length = worm_shaft_l - 2 * worm_bearing_h - worm_shaft_mount_h;
 
 worm_r = m * thread_starts / (2 * sin(lead_angle));  // From gears/gears.scad.
 
+bearing_z = [ worm_length / 2, -worm_length / 2 - worm_shaft_mount_h - worm_bearing_h ];
+
 /* [ Pinion ] */
 // Bolt size to use as shaft:
 pinion_shaft = "M3";
@@ -84,16 +89,17 @@ slider_h = slider_bolt_s + nut_wall_d;
 housing_t = bolt_wall_d;
 housing_w = slider_d / 2 + nut_wall_d / 2 - housing_t / 2;
 housing_h = worm_shaft_l;
-housing_d = worm_bearing_holder_d / 2 + pinion_d - slider_t + worm_r;
+housing_l = worm_bearing_holder_d / 2 + pinion_d - slider_t + worm_r;
 housing_z_offset = -worm_shaft_mount_h / 2;
 
 /* [ Print ] */
 print = false;
 bolt_hole_sacrificial_layer = 0.2;
-part = undef;  // ["housing", "worm", "pinion", "rack", "slider"]
+part = "";  // ["housing", "worm", "pinion", "rack", "slider"]
 
 echo("Slider bolt X spacing:", slider_bolt_x_s);
-echo("Housing length:", housing_d);
+echo("Housing length:", housing_l);
+echo("Worm bearing holder length: ", worm_bearing_holder_d);
 
 function slider_h () = slider_h;
 
@@ -110,33 +116,40 @@ module gearbox_rib (a_x, a_y, b_x0, b_x1, b_y, h) {
   }
 }
 
+module gearbox_worm_to_worm_bearings (top = true, bottom = true) {
+  // XXX: full of hacks to get the bearing properly rotated for assembly instructions.
+  // We're in the middle of the worm gear right now.
+  b_z = concat(top ? [bearing_z[0]] : [], bottom ? [bearing_z[1]] : []);
+  for (z = b_z) {
+    translate([ 0, 0, z + (z == b_z[1] ? worm_bearing_h : 0) ]) {
+      mirror(z == b_z[1] ? [ 0, 0, 1 ] : [ 0, 0, 0 ]) children();
+    }
+  }
+}
+
 module gearbox_housing_half () {
-  bearing_z = [ worm_length / 2, -worm_length / 2 - worm_shaft_mount_h - worm_bearing_h ];
   difference() {
     union() {
-      translate([ -housing_w - housing_t, -housing_d - slider_t, housing_z_offset ])
-        cube([ housing_t, housing_d, housing_h ]);
+      translate([ -housing_w - housing_t, -housing_l - slider_t, housing_z_offset ])
+        cube([ housing_t, housing_l, housing_h ]);
 
       gearbox_to_drive_train() {
         gearbox_to_worm() {
-          // We're in the middle of the worm gear right now.
-          for (z = bearing_z) {
-            translate([ 0, 0, z ]) {
-              rotate([ 0, 0, 180 ]) translate([ 0, -worm_bearing_holder_d / 2 ])
-                cube([ housing_w, worm_bearing_holder_d, worm_bearing_h ]);
-            }
+          gearbox_worm_to_worm_bearings() {
+            translate([ 0, -worm_bearing_holder_d / 2 ])
+              cube([ housing_w, worm_bearing_holder_d, worm_bearing_h ]);
           }
         }
 
         pinion_spacer_h = housing_w - w / 2 - tight_fit;
         pinion_spacer_d = bolt_diameter(pinion_shaft) + bolt_wall_min_d;
-        rib_w = housing_d;
+        rib_w = housing_l;
         translate([ -housing_w, -slider_t - rib_w ]) mirror([ 0, 1 ]) rotate([ 0, 0, 270 ])
           gearbox_rib(
-            housing_d / 2,
+            housing_l / 2,
             housing_w - worm_r -
               m,  // Length and height of first section (trying to avoid the worm gear)
-            housing_d / 2 - pinion_d / 2 + slider_t - pinion_spacer_d / 2,
+            housing_l / 2 - pinion_d / 2 + slider_t - pinion_spacer_d / 2,
             pinion_spacer_d,  // Length and height of the final section (building up to
                               // the pinion gear spacer)
             pinion_spacer_h,  // Height of the final section
@@ -149,17 +162,16 @@ module gearbox_housing_half () {
       for (side = [ 1, -1 ]) {
         translate([ 0, 0, side * slider_bolt_s / 2 ]) {
           rotate([ 90, 0, 0 ])
-            bolt(bolt, length = housing_d + slider_t, kind = "socket_head");
+            bolt(bolt, length = housing_l + slider_t, kind = "socket_head");
         }
       }
     }
 
     gearbox_to_drive_train() {
       gearbox_to_worm() {
-        for (z = bearing_z) {
-          translate([ 0, 0, z ]) {
-            cylinder(d = worm_bearing_od, h = worm_bearing_h);
-          }
+        gearbox_worm_to_worm_bearings() {
+          translate([ 0, 0, -ec ])
+            cylinder(d = worm_bearing_od + press_fit, h = worm_bearing_h + ec * 2);
         }
       }
       gearbox_to_pinion() {
@@ -304,7 +316,6 @@ module gearbox_to_drive_train () {
 }
 
 module print () {
-  assert(!is_undef(part), "part needs to be set");
   if (part == "housing")
     gearbox_housing();
   else if (part == "pinion")
@@ -315,6 +326,8 @@ module print () {
     gearbox_rack();
   else if (part == "slider")
     slider();
+  else
+    assert(false, "part needs to be set");
 }
 
 print();

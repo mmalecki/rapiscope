@@ -1,13 +1,23 @@
+include <../nopscadlib/vitamins/ball_bearings.scad>
 include <../parameters.scad>;
 include <../v-slot/parameters.scad>;
 use <../gearbox.scad>
+use <../knob.scad>
+use <../nopscadlib/utils/annotation.scad>;
+use <../nopscadlib/vitamins/ball_bearing.scad>;
 use <../v-slot/v-slot.scad>;
 
+$fn = 50;
+
 /* [ Assembly ] */
+// How much to explode the assembly:
+e = 10;
 // Show the housing:
 housing = true;
 // Show the worm gear:
 worm = true;
+// Show the worm gear bearings:
+worm_bearings = true;
 // Show the pinion gear:
 pinion = true;
 // Show the rail:
@@ -24,6 +34,7 @@ rom = true;
 housing_alpha = 1;  //[0:0.1:1]
 
 module gearbox_assembly (
+  e = 0,
   housing = true,
   pinion = true,
   worm = true,
@@ -35,8 +46,18 @@ module gearbox_assembly (
   }
 
   gearbox_to_drive_train() {
-    if (worm)
-      gearbox_to_worm() gearbox_worm();
+    gearbox_to_worm() {
+      if (worm_bearings)
+        gearbox_worm_to_worm_bearings() {
+          translate([ 0, 0, bb_width(BB608) / 2 ]) {
+            translate([ 0, 0, e ]) ball_bearing(BB608);
+            translate([ 0, 0, e / 2 ]) arrow(length = e / 2);
+          }
+        }
+
+      if (worm)
+        gearbox_worm();
+    }
 
     if (pinion)
       gearbox_to_pinion() gearbox_pinion_assembly(rom = rom);
@@ -44,6 +65,7 @@ module gearbox_assembly (
 }
 
 module drive_train_assembly (
+  e = 0,
   rail = true,
   rack = true,
   housing = true,
@@ -52,7 +74,7 @@ module drive_train_assembly (
   rom = false,
   housing_alpha = 1,
 ) {
-  gearbox_assembly(housing, pinion, worm, rom, housing_alpha);
+  gearbox_assembly(e, housing, pinion, worm, rom, housing_alpha);
 
   if (rack) {
     gearbox_rack();
@@ -68,4 +90,4 @@ module drive_train_assembly (
   }
 }
 
-drive_train_assembly(rail, rack, housing, pinion, worm, rom, housing_alpha);
+drive_train_assembly(e, rail, rack, housing, pinion, worm, rom, housing_alpha);
