@@ -57,8 +57,9 @@ pinion_shaft = "M3";
 
 // How many teeth the pinion gear should have:
 pinion_teeth = 16;
-//
+// Outer diameter of the pinion bearing.
 pinion_bearing_od = 10;
+// Height of the pinion bearing.
 pinion_bearing_h = 4;
 pinion_d = m * pinion_teeth;
 
