@@ -43,7 +43,7 @@ worm_shaft_nut_h = nut_height(worm_shaft, kind = "hexagon_lock");
 worm_shaft_nut_wall_d = nut_width_across_corners(worm_shaft) + nut_wall_min_d;
 
 // Length of the mount at the bottom of the shaft:
-worm_shaft_mount_h = worm_shaft_nut_h + nut_wall_min_h;
+worm_shaft_mount_h = worm_shaft_nut_h + fastener_wall_min_h;
 // Length of the worm gear itself:
 worm_length = worm_shaft_l - 2 * worm_bearing_h - worm_shaft_mount_h;
 
@@ -63,10 +63,11 @@ pinion_bearing_h = 4;
 pinion_d = m * pinion_teeth;
 
 /* [ Rack ] */
-// Length of the rack (120 mm for 400 mm long v-slot, 220 mm for 500 mm):
-rack_l = 120;
+// Length of the rack (120 mm for 300 mm long v-slot, 220 mm for 400 mm):
 rack_mount_bolt_l = 8;
 rack_mount_d = rack_mount_bolt_l;
+
+// TODO: `rack_mount_d` can likely be derived from design rules
 
 // Rack mount bolt.
 rack_mount_bolt = "M4";
