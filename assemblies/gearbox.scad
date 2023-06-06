@@ -11,7 +11,7 @@ $fn = 50;
 
 /* [ Assembly ] */
 // How much to explode the assembly:
-e = 10;
+e = 20;
 // Show the housing:
 housing = true;
 // Show the worm gear:
