@@ -11,37 +11,16 @@ ec = 0.01;
 
 $fn = 200;
 
-// Width of the gears:
-w = 6;
-
-// Gear module:
-m = 1.5;
-
 /* [ Worm ] */
 thread_starts = 2;
 lead_angle = 10;
-
-// Worm mount:
-//
-// We're using bolts as shafts here, so our length choices are limited. We're therefore
-// going to drive parts of the worm design off the shaft length.
-
-// Bolt size to use as shaft:
-worm_shaft = "M8";
-// Shaft length:
-worm_shaft_l = 50;
-
-// Height of the worm bearing:
-worm_bearing_h = 7;
-// Internal diameter of the worm bearing:
-worm_bearing_id = 8;
-// Outer diameter of the worm bearing:
-worm_bearing_od = 22;
 
 worm_bearing_holder_d = worm_bearing_od + bearing_wall_min_d;
 worm_shaft_nut_h = nut_height(worm_shaft, kind = "hexagon_lock");
 worm_shaft_nut_wall_d = nut_width_across_corners(worm_shaft) + nut_wall_min_d;
 
+// Worm mount:
+//
 // Length of the mount at the bottom of the shaft:
 worm_shaft_mount_h = worm_shaft_nut_h + fastener_wall_min_h;
 // Length of the worm gear itself:
@@ -51,16 +30,6 @@ worm_r = m * thread_starts / (2 * sin(lead_angle));  // From gears/gears.scad.
 
 bearing_z = [ worm_length / 2, -worm_length / 2 - worm_shaft_mount_h - worm_bearing_h ];
 
-/* [ Pinion ] */
-// Bolt size to use as shaft:
-pinion_shaft = "M3";
-
-// How many teeth the pinion gear should have:
-pinion_teeth = 16;
-// Outer diameter of the pinion bearing.
-pinion_bearing_od = 10;
-// Height of the pinion bearing.
-pinion_bearing_h = 4;
 pinion_d = m * pinion_teeth;
 
 /* [ Rack ] */
@@ -99,11 +68,16 @@ print = false;
 bolt_hole_sacrificial_layer = 0.2;
 part = "";  // ["housing", "worm", "pinion", "rack", "slider"]
 
+function slider_h () = slider_h;
+
+// Housing outer width:
+function housing_ow () = (housing_w + housing_t) * 2;
+
 echo("Slider bolt X spacing:", slider_bolt_x_s);
 echo("Housing length:", housing_l);
+echo("Housing internal width:", housing_w * 2);
+echo("Housing outer width:", housing_ow());
 echo("Worm bearing holder length: ", worm_bearing_holder_d);
-
-function slider_h () = slider_h;
 
 module gearbox_housing () {
   gearbox_housing_half();
@@ -127,6 +101,10 @@ module gearbox_worm_to_worm_bearings (top = true, bottom = true) {
       mirror(z == b_z[1] ? [ 0, 0, 1 ] : [ 0, 0, 0 ]) children();
     }
   }
+}
+
+module gearbox_worm_to_worm_bolt () {
+  translate([ 0, 0, bearing_z[1] ]) children();
 }
 
 module gearbox_housing_half () {
@@ -177,11 +155,9 @@ module gearbox_housing_half () {
         }
       }
       gearbox_to_pinion() {
-        translate([ 0, 0, housing_w + housing_t ]) {
-          rotate([ 180, 0, 0 ]) {
-            nutcatch_parallel(pinion_shaft);
-            bolt(pinion_shaft, length = v_slot_d, kind = "socket_head");
-          }
+        gearbox_pinion_to_mount() {
+          nutcatch_parallel(pinion_shaft);
+          bolt(pinion_shaft, length = (housing_w + housing_t) * 2);
         }
       }
     }
@@ -195,13 +171,10 @@ module gearbox_to_pinion () {
   translate([ 0, -pinion_d / 2 ]) rotate([ 90, 0, -90 ]) children();
 }
 
-module gearbox_pinion_assembly (rom = false) {
-  if (rom) {
-    translate([ 0, 0, -w / 2 ]) {
-      color("red", 0.25) cylinder(d = m * pinion_teeth + 2 * m, h = w);
-    }
+module gearbox_pinion_to_mount () {
+  translate([ 0, 0, housing_w + housing_t ]) {
+    rotate([ 180, 0, 0 ]) children();
   }
-  gearbox_pinion();
 }
 
 module gearbox_pinion () {
