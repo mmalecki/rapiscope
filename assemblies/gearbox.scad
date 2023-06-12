@@ -98,14 +98,18 @@ module gearbox_assembly (
 }
 
 module gearbox_pinion_assembly (e, fasteners, rom = false) {
+  fastened = fasteners == "fastened";
+  e_f = fasteners == "exploded" ? e : 0;
+
   if (rom) {
     translate([ 0, 0, -w / 2 ]) {
       color("red", 0.25) cylinder(d = m * pinion_teeth + 2 * m, h = w);
     }
   }
   gearbox_pinion_to_mount() {
-    nut(pinion_shaft);
-    bolt_(pinion_shaft, length = housing_ow(), kind = "socket_head");
+    translate([ 0, 0, -e_f ]) nut(pinion_shaft, arrow);
+    translate([ 0, 0, e_f ])
+      bolt_(pinion_shaft, length = housing_ow(), kind = "socket_head", arrow, fastened);
   }
   gearbox_pinion();
 }
@@ -120,7 +124,7 @@ module drive_train_assembly (
   rom = false,
   housing_alpha = 1,
 ) {
-  gearbox_assembly(e, housing, pinion, worm, rom, housing_alpha);
+  translate([ 0, -e ]) gearbox_assembly(e, housing, pinion, worm, rom, housing_alpha);
 
   if (rack) {
     gearbox_rack();
