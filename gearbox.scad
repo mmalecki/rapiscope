@@ -231,6 +231,10 @@ module slider () {
     v_slot_2d_slider(loose_fit);
   }
 
+  slider_mount_panes();
+}
+
+module slider_mount_panes () {
   // This is pretty convoluted.
   for (side_x = [ 1, -1 ]) {
     for (side_y = [ 1, -1 ]) {
