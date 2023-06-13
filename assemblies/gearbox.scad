@@ -107,9 +107,11 @@ module gearbox_pinion_assembly (e, fasteners, rom = false) {
     }
   }
   gearbox_pinion_to_mount() {
-    translate([ 0, 0, -e_f ]) nut(pinion_shaft, arrow);
-    translate([ 0, 0, e_f ])
-      bolt_(pinion_shaft, length = housing_ow(), kind = "socket_head", arrow, fastened);
+    if (fasteners != "no") {
+      translate([ 0, 0, -e_f ]) nut(pinion_shaft, arrow);
+      translate([ 0, 0, e_f ])
+        bolt_(pinion_shaft, length = housing_ow(), kind = "socket_head", arrow, fastened);
+    }
   }
   gearbox_pinion();
 }
