@@ -97,8 +97,8 @@ module gearbox_worm_to_worm_bearings (top = true, bottom = true) {
   // We're in the middle of the worm gear right now.
   b_z = concat(top ? [bearing_z[0]] : [], bottom ? [bearing_z[1]] : []);
   for (z = b_z) {
-    translate([ 0, 0, z + (z == b_z[1] ? worm_bearing_h : 0) ]) {
-      mirror(z == b_z[1] ? [ 0, 0, 1 ] : [ 0, 0, 0 ]) children();
+    translate([ 0, 0, z + (z == bearing_z[1] ? worm_bearing_h : 0) ]) {
+      mirror(z == bearing_z[1] ? [ 0, 0, 1 ] : [ 0, 0, 0 ]) children();
     }
   }
 }
