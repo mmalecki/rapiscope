@@ -42,6 +42,7 @@
 | Part                        | Quantity | Notes       | Links |
 | --------------------------- | -------: | ----------- | ----- |
 | M3x40                       |        4 | |
+| M3x12                       |        1 | |
 
 ## Raspberry Pi mount
 | Part                        | Quantity | Notes       | Links |
