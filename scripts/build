@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+OUTPUT_DIR="output"
+EXT="stl"
+
+render () {
+  echo "render: $@"
+  time openscad --render --enable import-function --enable textmetrics --enable manifold -D print=true $@
+}
+
+render_simple () {
+  render -o "$OUTPUT_DIR/$1.$EXT" $1.scad
+}
+
+mkdir -p "$OUTPUT_DIR"
+
+parts=(housing pinion worm slider)
+for part in "${parts[@]}"; do
+  render -o "$OUTPUT_DIR/$part.$EXT" -D "part=\"$part\"" gearbox.scad
+done
+
+render -o "$OUTPUT_DIR/rack-140.$EXT" -D 'part="rack"' -D "rack_l=140" gearbox.scad
+render -o "$OUTPUT_DIR/rack-240.$EXT" -D 'part="rack"' -D "rack_l=240" gearbox.scad
