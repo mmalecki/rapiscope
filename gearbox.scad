@@ -296,13 +296,13 @@ module gearbox_to_drive_train () {
 
 module print () {
   if (part == "housing")
-    gearbox_housing();
+    rotate([ 90, 0, 0 ]) gearbox_housing();
   else if (part == "pinion")
     gearbox_pinion();
   else if (part == "worm")
     gearbox_worm();
   else if (part == "rack")
-    gearbox_rack();
+    rotate([ 0, 90, 0 ]) gearbox_rack();
   else if (part == "slider")
     slider();
   else
