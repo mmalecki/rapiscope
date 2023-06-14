@@ -9,7 +9,7 @@ use <v-slot/v-slot.scad>;
 // Error correction for OpenSCAD flickering.
 ec = 0.01;
 
-$fn = 200;
+$fn = 128;
 
 /* [ Worm ] */
 thread_starts = 2;
