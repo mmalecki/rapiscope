@@ -18,6 +18,8 @@
 * plastic-safe grease (I used white lithium grease from WD-40, but silicone grease should do as well)
 
 ### Worm gear
+Clean out the worm gear's sacrificial layer (the thin wall between the nutcatch and bolt hole).
+
 Start by inserting the bearing into the top bearing holder.
 
 ![Insert the bearing into the top bearing holder](./img/build/gearbox-top-bearing.png)
