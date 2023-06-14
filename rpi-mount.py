@@ -72,5 +72,4 @@ def basket():
     return basket.val()
 
 
-show_object(mount(), name="mount")
-show_object(basket().translate((50, 50, -(h - basket_h) / 2)), name="basket")
+show_object(mount(), name="rpi-mount")
