@@ -61,7 +61,7 @@ straight onto the mount. Otherwise, you just rest the case inside the mount.
 | ----------------- | -------: | ----------- |
 | housing           |        1 |
 | pinion            |        1 |
-| rack              |        1 | Pick the version appropriate for your Z axis length (either 30 cm or 40 cm) |
+| rack              |        1 | Pick the version appropriate for your Z axis length, 140 mm for 30 cm and 240 mm for 40 cm |
 | slider            |        1 |
 | worm              |        1 |
 | knob              |        1 |
