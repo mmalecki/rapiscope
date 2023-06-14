@@ -64,9 +64,8 @@ housing_l = worm_bearing_holder_d / 2 + pinion_d - slider_t + worm_r;
 housing_z_offset = -worm_shaft_mount_h / 2;
 
 /* [ Print ] */
-print = false;
 bolt_hole_sacrificial_layer = 0.2;
-part = "";  // ["housing", "worm", "pinion", "rack", "slider"]
+part = "";  // ["", "housing", "worm", "pinion", "rack", "slider"]
 
 function slider_h () = slider_h;
 
