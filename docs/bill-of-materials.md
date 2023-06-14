@@ -32,6 +32,7 @@
 | M8x50 hex head              |        1 | |
 | M8 nyloc nut                |        1 | |
 | 608zz bearing               |        2 | |
+| plastic-safe grease         | as needed | |
 
 ## Slider
 | Part                        | Quantity | Notes       | Links |
