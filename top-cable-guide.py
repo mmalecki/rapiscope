@@ -95,5 +95,5 @@ def clip(fit = 0):
     ]
     return clip.polyline(pts).mirrorY().extrude(t)
     
-show_object(guide(), name="guide")
-show_object(clip(fit).translate((0, 0, -(v_slot_hold_h + t + tight_fit) / 2)), name="clip")
+show_object(guide(), {"name":"top-cable-guide"})
+show_object(clip(fit).translate((0, 0, -(v_slot_hold_h + t + tight_fit) / 2)), {"name":"top-cable-clip"})

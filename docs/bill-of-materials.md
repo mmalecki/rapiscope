@@ -66,7 +66,7 @@ straight onto the mount. Otherwise, you just rest the case inside the mount.
 | worm              |        1 |
 | knob              |        1 |
 | microscope-mount  |        1 | 
-| microscope-holder |        1 | 
+| microscope-holder |        1 | Requires supports |
 | rpi-mount         |        1 |
-| camera-cable-clip |  1 | |
-| top-camera-cable-guide |  3 | Optional, you can also use zip ties |
+| top-cable-clip    |        1 | |
+| top-cable-guide   |        3 | Optional, you can also use zip ties |
