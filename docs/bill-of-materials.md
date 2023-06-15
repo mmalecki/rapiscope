@@ -57,6 +57,16 @@
 straight onto the mount. Otherwise, you just rest the case inside the mount.
 
 ## Printed parts
+
+* **Material**: My build features the rack printed in PC-CF and worm and pinion printed
+  in resin, because I wanted to see what would happen. They're functioning well so far.
+  For general use, when PC-CF is not available, I would recommend PETG. What it lacks in
+  rigidity, it makes up in its failure mode of deforming instead of becoming brittle
+  and cracking.
+* **Layer height**: At most 0.2 mm layer height (recommend using [variable layer height](https://help.prusa3d.com/article/variable-layer-height-function_1750)
+* **Infill**: 15%
+* **Perimeters**: 3
+
 | Part              | Quantity | Notes       |
 | ----------------- | -------: | ----------- |
 | housing           |        1 |

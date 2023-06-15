@@ -4,6 +4,9 @@
 * The ["screw pulling technique"](https://help.prusa3d.com/guide/1-introduction_176529#176814) will help you get your nuts into tricky places.
 * Use a flat surface to make sure the bearings fit properly.
 
+## Printing instructions
+[Check out the bill of materials](./bill-of-materials.md) for 3D printing settings.
+
 ## Gearbox
 * 1 x housing
 * 2 x 608zz bearing
