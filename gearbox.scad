@@ -9,8 +9,6 @@ use <v-slot/v-slot.scad>;
 // Error correction for OpenSCAD flickering.
 ec = 0.01;
 
-$fn = 128;
-
 /* [ Worm ] */
 thread_starts = 2;
 lead_angle = 10;
@@ -66,6 +64,8 @@ housing_z_offset = -worm_shaft_mount_h / 2;
 /* [ Print ] */
 bolt_hole_sacrificial_layer = 0.2;
 part = "";  // ["", "housing", "worm", "pinion", "rack", "slider"]
+
+$fn = part == "worm" ? 64 : 128;
 
 function slider_h () = slider_h;
 
