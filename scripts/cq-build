@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+import cadquery.cqgi as cqgi
+import cadquery as cq
+
+output_dir = "output"
+
+parts = ["top-cable-guide", "rpi-mount", "microscope-mount"]
+
+def build(part):
+    # load the cadquery script
+    model = cqgi.parse(open(f"{part}.py").read())
+
+    # run the script and store the result (from the show_object call in the script)
+    build_result = model.build()
+
+    # test to ensure the process worked.
+    if build_result.success:
+        for i, result in enumerate(build_result.results):
+            if not isinstance(result.shape, cq.Assembly):
+                name = result.options["name"]
+                cq.exporters.export(result.shape, f"{output_dir}/{name}.step")
+    else:
+        print(f"Build failed: {build_result.exception}")
+
+for part in parts:
+    build(part)
