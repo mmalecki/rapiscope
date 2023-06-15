@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+OUTPUT_DIR="output"
+V="$(git describe --tags)"
+TMP_OUT="/tmp/$V.tgz"
+
+rm -rf "$OUTPUT_DIR"
+./scripts/build
+tar -czf "$TMP_OUT" "$OUTPUT_DIR/"
+mv "$TMP_OUT" "$OUTPUT_DIR/$V.tgz"
