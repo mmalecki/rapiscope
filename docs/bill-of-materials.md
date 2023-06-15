@@ -67,6 +67,8 @@ straight onto the mount. Otherwise, you just rest the case inside the mount.
 * **Infill**: 15%
 * **Perimeters**: 3
 
+The up-to-date models can be found on [Printables](https://www.printables.com/model/505840-rapiscope) or the latest [GitHub releases](https://github.com/mmalecki/rapiscope/releases).
+
 | Part              | Quantity | Notes       |
 | ----------------- | -------: | ----------- |
 | housing           |        1 |
