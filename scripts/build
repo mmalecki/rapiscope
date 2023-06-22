@@ -22,4 +22,6 @@ done
 render -o "$OUTPUT_DIR/rack-140.$EXT" -D 'part="rack"' -D "rack_l=140" gearbox.scad
 render -o "$OUTPUT_DIR/rack-240.$EXT" -D 'part="rack"' -D "rack_l=240" gearbox.scad
 
+render -o "$OUTPUT_DIR/foot.$EXT" -D 'preset="2020"' extrusion-feet/foot.scad
+
 ./scripts/cq-build

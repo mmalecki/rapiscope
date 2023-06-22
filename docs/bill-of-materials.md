@@ -22,6 +22,10 @@
 | 90 degree joining plate     |        2 | | [PL](https://www.v-slot.pl/pl/p/Plyta-laczeniowa-90-stopni-do-2020/1820)
 | M5x10                       |        15 | | | 
 | M5 2020 t-nut               |        15 | | | 
+| M4x10                       |        4 | Optional*
+| M4 2020 t-nut               |        4 | Optional*
+
+*: Used to mount feet.
 
 ## Gearbox
 | Part                        | Quantity | Notes       | Links |
@@ -82,3 +86,4 @@ The up-to-date models can be found on [Printables](https://www.printables.com/mo
 | rpi-mount         |        1 |
 | top-cable-clip    |        1 | |
 | top-cable-guide   |        3 | Optional, you can also use zip ties |
+| foot              |        4 | Optional, material: TPU

@@ -13,3 +13,6 @@
 [submodule "knobs"]
 	path = knobs
 	url = https://github.com/mmalecki/openscad-knobs
+[submodule "extrusion-feet"]
+	path = extrusion-feet
+	url = git@github.com:mmalecki/extrusion-feet
