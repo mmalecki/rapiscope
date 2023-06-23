@@ -4,7 +4,7 @@ import cadquery as cq
 
 output_dir = "output"
 
-parts = ["top-cable-guide", "rpi-mount", "microscope-mount"]
+parts = ["top-cable-guide", "rpi-mount", "microscope-mount", "endcap"]
 
 def build(part):
     # load the cadquery script
