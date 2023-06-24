@@ -71,11 +71,13 @@ That's it, you're done!
 * 4 x foot, optional
 * 4 x M4x10, optional
 * 4 x M4 t-nut, optional
+* 2 x endcap, optional
 
 First, put together the base of the frame. Join the three 20 cm v-slot extrusions using the two 90 degree joining plates to form a "U".
 The envelope of the "U" will be our microscope's working field.
 
-Mount the feet using the M4x10 bolts and t-nuts: two to the bottom of the "U", and two at the ends of the prongs.
+If using, mount the feet using the M4x10 bolts and t-nuts: two to the bottom of the "U", and two at the ends of the prongs.
+If using, press fit the endcaps at the ends of the prongs. They will help guard against cuts from the sharp edges of extrusions.
 
 Next, mount the Z axis 2020 v-slot to the extrusion at the bottom of the "U", pointing up, using the T joining plate.
 

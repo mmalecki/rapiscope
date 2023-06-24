@@ -87,3 +87,4 @@ The up-to-date models can be found on [Printables](https://www.printables.com/mo
 | top-cable-clip    |        1 | |
 | top-cable-guide   |        3 | Optional, you can also use zip ties |
 | foot              |        4 | Optional, material: TPU
+| endcap            |        2 | Optional
