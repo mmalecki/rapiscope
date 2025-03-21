@@ -1,75 +1,76 @@
-import queryabolt
 import cadquery as cq
+from workplane import Workplane
+from ocp_vscode import *
+from settings import Settings
 
-class Workplane(queryabolt.WorkplaneMixin, cq.Workplane):
-    pass
+set_defaults(reset_camera=False)
 
-fit = 0.1
+fit = Settings.fit
+padding = 8
 
-# Chamfer
-c = 0.5
-
-padding = 12.5
-
-t = 4
+t = 3.6
+standoff_d = 5
+standoff_h = 4
 
 rpi_w = 56
-rpi_mount = [49, 58]
+rpi_mount = [58, 49, ]
 rpi_case_t = 25
 rpi_camera_side_offset = 11.5
 
-# rpi_offset = (rpi_w - rpi_camera_side_offset) / 2
-rpi_offset = 0
+rpi_bolt = "M2.5"
+rpi_h = 10
+insert_d = 3.9
+insert_h = 5
 
-basket_h = 25
-basket_t = rpi_case_t + t
-rpi_bolt = "M3"
+v_slot_d = Settings.v_slot_d
+v_slot_mount_d = Settings.v_slot_d * 3
 
-v_slot_d = 20
-v_slot_d_fit = v_slot_d + fit
-v_slot_bolt = "M4"
+w = rpi_mount[0] + padding * 2 + t * 2
+h = rpi_mount[1] + padding * 2 + t * 2
 
-w = rpi_mount[0] + padding + t * 2
-h = rpi_mount[1] + padding + t
-
-def vslotMount(): 
-    pad = Workplane("YZ").rect(v_slot_d, v_slot_d).circle(queryabolt.boltData(v_slot_bolt)["diameter"] / 2).extrude(t / 2, both = True)
-    return pad.val()
-
-def rpiMount(workplane, tag = None):
-    r = (workplane.rect(rpi_mount[0], rpi_mount[1]))
-    if tag is not None:
-        r.tag(tag)
-    return r.vertices()
+def rpi_m(w):
+    return w.rect(rpi_mount[0], rpi_mount[1], forConstruction=True).vertices()
 
 def mount():
-    plate = Workplane("XZ").rect(w, h).extrude(t)
-
-    plate = plate.faces(">Y").workplane().pushPoints([(-w / 4, 0), (0, 0), (w / 4, 0)]).slot2D(h / 2, 5, 90).cutThruAll()
-
-    plate = rpiMount(plate.faces(">Y").workplane().move(0, t / 2)).nutcatchParallel(rpi_bolt)
-    plate = rpiMount(plate.faces(">Y").workplane().move(0, t / 2)).boltHole(rpi_bolt, t)
-
-    plate = plate.union(plate.faces(">Y").workplane(v_slot_d / 2)
-             .center(0, -(h - v_slot_d) / 2)
-             .pushPoints([[-v_slot_d_fit / 2 - t / 2 + rpi_offset, 0], [v_slot_d_fit / 2 + t / 2 + rpi_offset, 0]])
-             .eachpoint(lambda loc: vslotMount().located(loc))
+    mount = (Workplane("XZ")
+             .moveTo(0, h / 2).lineTo(w / 2, h / 2)
+             .lineTo(w / 2, -h / 2)
+             .lineTo(v_slot_mount_d / 2, -h / 2)
+             .lineTo(v_slot_mount_d / 2, -h / 2 - v_slot_d)
+             .lineTo(0,  -h / 2 - v_slot_d)
+             .mirrorY()
     )
+    mount = mount.extrude(t).edges("|Y").fillet(3)
 
-    plate = plate.union(basket().moved(cq.Location(cq.Vector(0, -rpi_case_t / 2 - t * 1.5, -(h - basket_h) / 2))))
+    mount.faces(">Y").workplane(centerOption="CenterOfBoundBox").center(0, v_slot_d / 2).tag("pi").end()
+    mount.faces("<Y").workplane(centerOption="CenterOfBoundBox").center(0, v_slot_d / 2).tag("profile").end()
 
-    # Access hole to the lower mount bolt.
-    plate = rpiMount(plate.faces("<Y").workplane().move(0, t / 2)).hole(5, t)
+    mount = rpi_m(mount.workplaneFromTagged("pi")).circle(standoff_d / 2).extrude(standoff_h)
 
-    return plate.edges("|Z and (>X or <X)").chamfer(c).edges("|Y and (>Z or <Z)").chamfer(c).edges("|X and (>Z or <Z)").chamfer(c)
+    mount = mount.faces(">Y[1]").edges("%Circle").edges(cq.selectors.RadiusNthSelector(0)).fillet(standoff_h / 2)
 
-def basket():
-    basket = cq.Workplane("XY").box(w, basket_t, basket_h)
-    basket = basket.faces("+Z or +Y").shell(-t)
+    mount = rpi_m(mount.workplaneFromTagged("profile")).hole(insert_d, depth=insert_h)
+    mount = rpi_m(mount.faces(">Y").workplane()).boltHole(rpi_bolt, clearance=Settings.fit)
 
-    basket = basket.faces("-Z").workplane().center(0, -t / 2).rect(15, rpi_case_t).cutThruAll() # SD card access
-    basket = basket.center(w / 2 - t / 2, 0).workplane(-t).rect(t, rpi_case_t * 3 / 4).cutBlind(-basket_h) # HDMI & power
-    return basket.val()
+    mount = (mount.workplaneFromTagged("pi")
+             .center(0, -h / 2 - v_slot_d / 2)
+             .rarray(v_slot_d, 1, 3, 1)
+             .cboreBoltHole(Settings.v_slot_bolt, clearance = fit,cboreDepth=t / 4)
+             )
 
+    mount = (mount
+             .rarray(1, v_slot_d, 1, 5)
+             .cboreBoltHole(Settings.v_slot_bolt, clearance = fit,cboreDepth=t / 4) # This actually only creates 3 visible holes
+             )
 
-show_object(mount(), name="rpi-mount")
+    mount = mount.workplaneFromTagged("pi").rarray(rpi_mount[0] / 2, 1, 2, 1).slot2D(rpi_mount[1] / 2, rpi_mount[0] / 8, 90).cutThruAll()
+
+    # The only integral part of this case: a stopper to prevent the
+    # scope head from ramming into the Pi.
+    mount = mount.workplaneFromTagged("pi").move(0, h / 2 - t / 2).rect(w, t).extrude(standoff_h + rpi_h)
+    mount = mount.edges("|Y and >Z").fillet(3)
+    return mount
+
+m = mount()
+show(m)
+m.export("rpi-mount.step")
