@@ -82,6 +82,7 @@ def mount():
     mount = mount.faces("<Y").edges("%Circle").edges(cq.selectors.RadiusNthSelector(0)).chamfer(insert_h / 8)
 
     mount = mount.edges("#Y").edges(">>Y[2]").edges(">Z").fillet(t / 2)
+    mount = mount.edges("<Z").edges("not %Circle").chamfer(t / 4)
     return mount
 
 m = mount()
