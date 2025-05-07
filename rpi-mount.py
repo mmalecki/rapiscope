@@ -16,7 +16,7 @@ standoff_h = 3.6
 rpi_w = 56
 rpi_mount = [58, 49, ]
 rpi_camera_side_offset = 11.5
-rpi_bottom_clearance = 45 # HDMI, power, etc.
+rpi_bottom_clearance = 55 # HDMI, power, etc.
 
 rpi_bolt = "M2"
 rpi_h = 10
