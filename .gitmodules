@@ -4,9 +4,6 @@
 [submodule "v-slot"]
 	path = v-slot
 	url = https://github.com/mmalecki/openscad-v-slot
-[submodule "gears"]
-	path = gears
-	url = https://github.com/chrisspen/gears.git
 [submodule "nopscadlib"]
 	path = nopscadlib
 	url = https://github.com/nophead/NopSCADlib.git
