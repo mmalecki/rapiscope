@@ -17,3 +17,7 @@ class Settings:
     v_slot_bolt_d = boltData(v_slot_bolt)['diameter']
 
     scope_d = 50
+
+    # Camera cable
+    cable_t = 1.6
+    cable_w = 16.6
